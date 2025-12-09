@@ -1,0 +1,44 @@
+name: CI – Glass Identification Project
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ✅ Run tests (if you add pytest later)
+        run: |
+          if [ -d "tests" ]; then
+            pytest -q
+          else
+            echo "No tests folder found, skipping pytest."
+          fi
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔨 Build API Docker image
+        run: |
+          docker build -t glass-api -f Dockerfile.api .
+
+      - name: 🔨 Build App Docker image
+        run: |
+          docker build -t glass-app -f Dockerfile.app .

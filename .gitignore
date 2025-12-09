@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+env/
+
+# OS files
+.DS_Store
+
+# Model files — DO NOT COMMIT
+models/*.joblib
+models/metrics.json
+
+# Streamlit cache
+.streamlit/
+
+# PyCharm / VSCode
+.idea/
+.vscode/

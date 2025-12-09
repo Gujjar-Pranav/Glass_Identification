@@ -1,0 +1,12 @@
+pandas
+numpy
+seaborn
+matplotlib
+scikit-learn
+imbalanced-learn
+joblib
+openpyxl
+streamlit
+fastapi
+uvicorn[standard]
+requests
