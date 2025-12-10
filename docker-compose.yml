@@ -2,18 +2,14 @@ version: "3.9"
 
 services:
   glass-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
+    image: ghcr.io/gujjar-pranav/glass-identification-api:latest
     container_name: glass_api
     ports:
       - "8000:8000"
     restart: unless-stopped
 
   glass-app:
-    build:
-      context: .
-      dockerfile: Dockerfile.app
+    image: ghcr.io/gujjar-pranav/glass-identification-app:latest
     container_name: glass_app
     ports:
       - "8501:8501"
