@@ -1,95 +1,310 @@
-# Glass Identification – Ensemble Learning Case Study
+Glass Identification – End-to-End Machine Learning System
+Portfolio Case Study
 
-## 1. Problem Statement
-The goal of this project is to classify types of glass based on their chemical composition and refractive index. This mimics a real-world forensic scenario where identifying glass type from fragments can support investigations.
+Author: Pranav Gujjar
+Tech Stack: Python, Scikit-Learn, FastAPI, Streamlit, Docker, GitHub Actions, CI/CD
 
-## 2. Data & Challenges
-- **Dataset:** UCI Glass Identification dataset.
-- **Challenges:**
-  - Small dataset (214 rows).
-  - Class imbalance across glass types.
-  - Potential outliers and noisy measurements.
-  - Need for robust, generalizable models rather than a single overfitted classifier.
+🔍 1. Problem Overview
 
-## 3. Approach
+Glass classification is essential in forensic analysis, manufacturing quality control, and material science.
+The goal of this project is to predict the type of glass based on its chemical composition using a complete end-to-end ML system.
 
-### 3.1 Preprocessing
-- Replaced zero values in numeric features with median values.
-- Removed duplicate rows and constant columns.
-- Performed IQR-based winsorization to limit the influence of extreme outliers.
-- Applied StandardScaler to normalize numeric features.
-- Used SMOTE to oversample minority classes and mitigate class imbalance.
+The raw UCI dataset includes:
 
-### 3.2 Feature Engineering
-- Designed domain-inspired features:
-  - Oxide ratios: Na/Ca, Mg/Ca.
-  - Structural interaction term: Al × Si.
-  - Non-linear transformation: RI².
-  - RI binning converted to ordinal and then one-hot encoded.
-- These features helped the models capture non-linear relationships and compositional structure more effectively.
+Refractive index (RI)
 
-### 3.3 Models & Hyperparameter Tuning
-- Baseline models:
-  - Random Forest, Bagging, AdaBoost, Gradient Boosting.
-- Hyperparameter tuning:
-  - Random Forest optimized using both GridSearchCV and RandomizedSearchCV with f1-macro scoring.
-- Final ensemble:
-  - Stacking Ensemble combining:
-    - Tuned Random Forest
-    - Gradient Boosting
-    - AdaBoost
-    - Logistic Regression as meta-learner.
+Chemical oxides (Na, Mg, Al, Si, K, Ca, Ba, Fe)
 
-## 4. Results
+Target glass type (1, 2, 3, 5, 6, 7)
 
-### 4.1 Model Performance (Test Set Accuracy)
-- Random Forest (baseline): ~0.84
-- Random Forest (tuned): ~0.86
-- Bagging: ~0.77
-- AdaBoost: ~0.65
-- Gradient Boosting: ~0.86
-- **Stacking Ensemble:** ~0.91 (best)
+This project goes beyond model training — it includes:
 
-The stacking model achieved the highest accuracy and strong macro F1-score, with particularly good recall for minority glass types (3, 5, and 6).
+✔ Fully automated preprocessing
+✔ Feature engineering
+✔ Multiple ML models + stacking ensemble
+✔ FastAPI backend for inference
+✔ Interactive Streamlit UI
+✔ Docker-based deployment
+✔ CI/CD pipeline via GitHub Actions
 
-### 4.2 Key Insights
-- Feature engineering significantly improved model performance compared to raw features.
-- Hyperparameter tuning of Random Forest yielded a measurable accuracy gain.
-- Boosting and stacking techniques outperformed simple bagging and baseline models.
-- The Stacking Ensemble was able to leverage complementary strengths of RF, GB, and AdaBoost.
+🧱 2. Project Objectives
+🎯 Primary Goals
 
-## 5. Deployment & Visualization
+Build a robust ML model to classify glass types.
 
-### 5.1 Streamlit App
-- Built an interactive web app using Streamlit:
-  - Model comparison dashboard (accuracy bar chart).
-  - Confusion matrix and classification report.
-  - EDA: correlation heatmap & sample data view.
-  - Live prediction form for entering glass composition and getting the predicted type.
+Create a real-time prediction service using FastAPI.
 
-### 5.2 FastAPI Service
-- Implemented a FastAPI endpoint (`/predict`) that:
-  - Accepts feature values as JSON.
-  - Applies the full preprocessing & feature engineering pipeline.
-  - Returns the predicted glass type from the stacking model.
+Build an interactive web dashboard using Streamlit.
 
-### 5.3 Explainability with SHAP
-- Used SHAP TreeExplainer on a tuned Random Forest to:
-  - Generate global feature importance (summary plot).
-  - Understand which features drive the predictions (e.g., RI, Ca, Na, Na/Ca ratio).
+Package everything into reproducible Docker containers.
 
-## 6. Tech Stack
-- Python, pandas, numpy, scikit-learn, imbalanced-learn
-- Streamlit for UI
-- FastAPI + Uvicorn for API
-- SHAP for model explainability
-- GitHub Actions for CI
-- Docker for containerization
+Automate build & deployment using CI/CD.
 
-## 7. Conclusion
-This project demonstrates an end-to-end applied machine learning workflow:
-- From data cleaning and feature engineering
-- To model training and tuning
-- To interpretability, deployment, and a user-facing interface.
+🔥 Why This Project Stands Out
 
-The Stacking Ensemble achieved ~91% accuracy and provides a strong baseline for further experimentation with advanced gradient boosting frameworks or interpretability techniques.
+Most ML projects stop after training a model.
+This project demonstrates full ML system engineering, including:
+
+Serving
+
+Monitoring
+
+Versioning
+
+Deployment
+
+UI integration
+
+Developer workflows with CI/CD
+
+📊 3. Data Pipeline & Feature Engineering
+🧽 Data Cleaning
+
+Removed duplicate and constant columns
+
+Replaced invalid zero values
+
+Median imputation
+
+Winsorization to handle extreme outliers
+
+⚙️ Feature Engineering
+
+Non-linear RI features (RI², RI buckets)
+
+Interaction terms (Al × Si)
+
+Chemical ratios (Na/Ca, Mg/Ca)
+
+Standard Scaling
+
+Manual feature importance analysis
+
+📂 Preprocessing Pipeline
+
+All transformations are reproducible through:
+
+src/data_prep.py
+src/features.py
+src/infer.py
+
+
+A consistent set of features is stored in:
+
+models/feature_columns.joblib
+models/scaler.joblib
+
+🤖 4. Model Development
+Models Trained
+
+Random Forest (baseline)
+
+Tuned Random Forest (GridSearch)
+
+Bagging Classifier
+
+AdaBoost
+
+Gradient Boosting
+
+Stacking Ensemble → Final model
+
+🏆 Best Performing Model
+
+The Stacking Ensemble achieved:
+
+Metric	Score
+Accuracy	0.90+
+Macro F1 Score	High across all classes
+Robustness	Best generalization
+Why Stacking?
+
+Combines strengths of multiple algorithms → reduced variance, reduced bias, better handling of mixed feature interactions.
+
+🧪 5. FastAPI Backend – Real-Time Inference
+
+The backend exposes:
+
+GET /health – quick uptime check
+
+POST /predict – returns predicted glass type
+
+⚙️ Key Features
+
+Loads models at startup
+
+Standardizes input
+
+Applies feature engineering automatically
+
+Returns prediction in milliseconds
+
+Light, fast, production-ready API
+
+Example Request
+{
+  "RI": 1.52,
+  "Na": 13.4,
+  "Mg": 3.6,
+  "Al": 1.2,
+  "Si": 72.0,
+  "K": 0.4,
+  "Ca": 8.8,
+  "Ba": 0.0,
+  "Fe": 0.1
+}
+
+🖥 6. Streamlit Frontend – Interactive Dashboard
+
+A polished and intuitive dashboard with:
+
+Tab 1 — Interactive Data Exploration
+
+Adjustable sliders for all 9 input features
+
+Predict button
+
+Reset button
+
+Latest prediction summary
+
+Probability chart
+
+Last 5 predictions (with timestamps)
+
+Tab 2 — System Architecture
+
+High-level architecture diagram
+
+Explanation of pipelines
+
+Tech stack breakdown
+
+Tab 3 — Model Insights
+
+Accuracy comparison among models
+
+Confusion matrix
+
+F1-score per class
+
+Final conclusions
+
+This UI allows non-technical stakeholders to interact with the ML model easily.
+
+🐳 7. Docker Deployment Architecture
+
+The system uses two lightweight containers:
+
+1️⃣ glass-api
+
+FastAPI backend for inference
+Runs on: http://localhost:8000
+
+2️⃣ glass-app
+
+Streamlit frontend
+Automatically communicates with backend via internal Docker network
+Runs on: http://localhost:8501
+
+docker-compose.yml
+version: "3.9"
+
+services:
+  glass-api:
+    image: ghcr.io/<owner>/glass-identification-api:latest
+    ports:
+      - "8000:8000"
+
+  glass-app:
+    image: ghcr.io/<owner>/glass-identification-app:latest
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://glass-api:8000
+    depends_on:
+      - glass-api
+
+🤖 8. CI/CD Pipeline (GitHub Actions)
+Automated Steps:
+
+✔ Python syntax checks
+✔ Build API image → push to GHCR
+✔ Build APP image → push to GHCR
+✔ Tag images with latest and commit SHA
+
+This ensures:
+
+Reproducibility
+
+Versioned deployments
+
+No dependency on local environment
+
+Production-level workflow
+
+📈 9. Final Results & Insights
+Key Findings
+
+RI, Sodium, and Calcium are the strongest predictors.
+
+Types 1, 2, and 7 have high separability.
+
+Types 5 and 6 show minor overlap, but ensemble model handles them well.
+
+Business Value
+
+Enables rapid forensic material classification
+
+Standardizes prediction pipeline
+
+Easy-to-deploy Dockerized ML system
+
+Human-friendly UI for domain experts
+
+🧭 10. Lessons Learned
+Technical
+
+Building repeatable ML preprocessing workflows
+
+Designing a clean inference pipeline
+
+Model serving patterns with FastAPI
+
+Packaging multi-service apps with Docker
+
+Implementing CI/CD for machine learning projects
+
+Non-Technical
+
+Importance of explainability for stakeholders
+
+Balancing accuracy and interpretability
+
+Creating UI that helps non-technical users trust ML results
+
+🚀 11. Future Enhancements
+
+Add Prometheus/Grafana monitoring
+
+Introduce model versioning (MLflow)
+
+Auto retraining pipeline
+
+Deploy on cloud (AWS / GCP / DigitalOcean / Fly.io)
+
+Add validation dataset drift detection
+
+🏁 12. Conclusion
+
+This project demonstrates real-world ML system engineering, not just model training.
+It includes:
+
+✔ Complete data pipeline
+✔ Strong ML model (Stacking Ensemble)
+✔ Backend + frontend integration
+✔ Docker deployment
+✔ CI/CD automation
+✔ Production-ready architecture
+
+It is a strong showcase of end-to-end machine learning & MLOps skills.
