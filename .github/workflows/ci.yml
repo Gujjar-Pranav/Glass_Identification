@@ -8,11 +8,13 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Image names will become:
-  # ghcr.io/<your-username>/glass-identification-api
-  # ghcr.io/<your-username>/glass-identification-app
-  IMAGE_NAME_API: ${{ github.repository_owner }}/glass-identification-api
-  IMAGE_NAME_APP: ${{ github.repository_owner }}/glass-identification-app
+
+  # Lowercased owner name (required for GHCR)
+  OWNER_LC: ${{ github.repository_owner | toLower }}
+
+  IMAGE_NAME_API: ${{ github.repository_owner | toLower }}/glass-identification-api
+  IMAGE_NAME_APP: ${{ github.repository_owner | toLower }}/glass-identification-app
+
 
 jobs:
   # -------------------------------
