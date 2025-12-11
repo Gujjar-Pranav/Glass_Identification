@@ -2,11 +2,11 @@ pandas
 numpy
 seaborn
 matplotlib
-scikit-learn
-imbalanced-learn
 joblib
 openpyxl
 streamlit
 fastapi
 uvicorn[standard]
 requests
+scikit-learn==1.2.2
+imbalanced-learn==0.10.1
