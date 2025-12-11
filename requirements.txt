@@ -1,6 +1,6 @@
 pandas
-numpy==1.23.5
-scipy==1.10.1
+numpy==1.26.4
+scipy==1.11.4
 seaborn
 matplotlib
 joblib
@@ -9,5 +9,7 @@ streamlit
 fastapi
 uvicorn[standard]
 requests
-scikit-learn==1.2.2
-imbalanced-learn==0.10.1
+
+# Compatible with Python 3.12:
+scikit-learn==1.4.2
+imbalanced-learn==0.12.2
