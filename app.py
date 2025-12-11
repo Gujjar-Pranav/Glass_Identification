@@ -1,22 +1,23 @@
 import sys
-import os
-import json
+import time
 from pathlib import Path
 
+import joblib
+import json
 import numpy as np
 import pandas as pd
 import requests
 import seaborn as sns
+
 import streamlit as st
 import matplotlib.pyplot as plt
+import subprocess
 
 from src.data_prep import load_data, full_preprocess, split_scale_smote
-from src.infer import preprocess_single_row, load_artifacts as core_load_artifacts
+from src.infer import preprocess_single_row
 
-# Where metrics.json lives (same as for the API)
 MODELS_DIR = Path("models")
-
-# API base URL (Railway sets this in glass-app → Variables → API_URL)
+import os
 API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 # ---------------------------------------------------
@@ -42,29 +43,22 @@ def get_processed_data():
 
 @st.cache_resource
 def load_artifacts():
-    """
-    Reuse the same artifact loader as the FastAPI service.
+    model = joblib.load(MODELS_DIR / "stacking_model.joblib")
+    scaler = joblib.load(MODELS_DIR / "scaler.joblib")
+    feature_columns = joblib.load(MODELS_DIR / "feature_columns.joblib")
+    with open(MODELS_DIR / "metrics.json") as f:
+        metrics = json.load(f)
+    return model, scaler, feature_columns, metrics
 
-    src.infer.load_artifacts() already knows where the model,
-    scaler and feature columns are stored in the container.
 
-    This wrapper adds metrics loading on top.
-    """
-    artifacts = core_load_artifacts()
+def start_fastapi():
+    subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "api:app", "--reload"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    time.sleep(1)
 
-    # Handle both 3-tuple (model, scaler, feature_columns)
-    # and 4-tuple (model, scaler, feature_columns, metrics)
-    if len(artifacts) == 3:
-        model, scaler, feature_columns = artifacts
-        try:
-            with open(MODELS_DIR / "metrics.json") as f:
-                metrics = json.load(f)
-        except FileNotFoundError:
-            metrics = {}
-        return model, scaler, feature_columns, metrics
-    else:
-        # Already includes metrics
-        return artifacts
 
 def api_alive():
     try:
@@ -99,14 +93,15 @@ model, scaler, feature_columns, metrics = load_artifacts()
 # ---------------------------------------------------
 # Sidebar controls
 # ---------------------------------------------------
-st.sidebar.header("⚙ Backend Status")
+st.sidebar.header("⚙ Backend Controls")
 
-st.sidebar.markdown(f"**FastAPI base URL**: `{API_URL}`")
+if st.sidebar.button("Start FastAPI server"):
+    start_fastapi()
+    st.sidebar.success("FastAPI started at http://127.0.0.1:8000/docs")
 
 st.sidebar.markdown(
-    "**FastAPI status:** " + ("🟢 Reachable" if api_alive() else "🔴 Not reachable")
+    "**FastAPI status:** " + ("🟢 Running" if api_alive() else "🔴 Stopped")
 )
-
 
 # ---------------------------------------------------
 # Tabs
@@ -555,5 +550,6 @@ with tab3:
 - Log and display the **last 5 predictions** for quick inspection and demo purposes.
         """
     )
+
 
 
