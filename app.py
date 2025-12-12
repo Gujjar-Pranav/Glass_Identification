@@ -452,18 +452,24 @@ Artifacts stored in `/models/`:
         """
 **Docker**
 
-- The project can be containerised using Docker:
-  - One image for the **FastAPI backend** (`/predict`, `/health`).
-  - One image for the **Streamlit frontend** (user-facing dashboard).
-- This makes the system portable and easy to deploy on any cloud (AWS / GCP / Azure / Render).
+- The system is containerized using Docker with two independent services:
+  - A FastAPI backend exposing `/predict` and `/health` endpoints.
+  - A Streamlit frontend providing the user-facing dashboard.
+- Docker Compose orchestrates both services for consistent local execution.
+- Containerization ensures portability, reproducibility, and environment isolation.
+- The system is cloud-ready, as both services are packaged as standalone images.
+
 
 **CI/CD (GitHub Actions)**
 
-- A simple CI workflow can:
-  - Install dependencies and run unit tests (`pytest`).
-  - Build Docker images for the API and the app.
-  - Optionally push images to a container registry (e.g. GitHub Container Registry).
-- This shows an end-to-end MLOps mindset: not just training models, but packaging and delivering them reliably.
+- The CI pipeline performs lightweight Python syntax validation using `compileall`.
+- Docker images are built for both the FastAPI backend and Streamlit frontend.
+- Images are automatically pushed to GitHub Container Registry on merges to `main`.
+- Images are versioned using both `latest` and commit SHA tags.
+- This workflow demonstrates an end-to-end MLOps mindset focused on:
+  - reproducible builds
+  - reliable packaging
+  - automated delivery of ML systems
         """
     )
 
