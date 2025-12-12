@@ -1,310 +1,210 @@
-Glass Identification – End-to-End Machine Learning System
-Portfolio Case Study
+# Glass Identification – End-to-End Machine Learning System  
+**Portfolio Case Study**
 
-Author: Pranav Gujjar
-Tech Stack: Python, Scikit-Learn, FastAPI, Streamlit, Docker, GitHub Actions, CI/CD
+**Author:** Pranav Gujjar  
+**Tech Stack:** Python, scikit-learn, FastAPI, Streamlit, Docker, GitHub Actions
 
-🔍 1. Problem Overview
+---
 
-Glass classification is essential in forensic analysis, manufacturing quality control, and material science.
-The goal of this project is to predict the type of glass based on its chemical composition using a complete end-to-end ML system.
+## 1. Problem Overview
 
-The raw UCI dataset includes:
+Glass classification plays a critical role in forensic science, manufacturing quality control, and material analysis.  
+The objective of this project is to predict the **type of glass** based on its chemical composition using a **production-oriented, end-to-end machine learning system**.
 
-Refractive index (RI)
+The dataset is derived from the UCI Glass Identification Dataset and includes:
+- Refractive Index (RI)
+- Chemical oxides: Na, Mg, Al, Si, K, Ca, Ba, Fe
+- Target glass type: 1, 2, 3, 5, 6, 7
 
-Chemical oxides (Na, Mg, Al, Si, K, Ca, Ba, Fe)
+This project intentionally goes beyond model training to demonstrate **full ML system engineering**, including:
+- automated preprocessing and feature engineering
+- ensemble-based modeling
+- real-time inference
+- UI integration
+- containerization
+- CI/CD automation
 
-Target glass type (1, 2, 3, 5, 6, 7)
+---
 
-This project goes beyond model training — it includes:
+## 2. Project Objectives
 
-✔ Fully automated preprocessing
-✔ Feature engineering
-✔ Multiple ML models + stacking ensemble
-✔ FastAPI backend for inference
-✔ Interactive Streamlit UI
-✔ Docker-based deployment
-✔ CI/CD pipeline via GitHub Actions
+### Primary Goals
+- Build a robust and accurate glass classification model.
+- Design a reproducible preprocessing and inference pipeline.
+- Expose predictions through a FastAPI-based service.
+- Provide an interactive dashboard for non-technical users.
+- Package the system using Docker for consistent execution.
+- Automate validation and builds using GitHub Actions.
 
-🧱 2. Project Objectives
-🎯 Primary Goals
+### Why This Project Stands Out
+Most ML projects stop at experimentation.  
+This project demonstrates how models are **engineered, served, deployed, and maintained** in real-world environments.
 
-Build a robust ML model to classify glass types.
+---
 
-Create a real-time prediction service using FastAPI.
+## 3. Data Pipeline & Feature Engineering
 
-Build an interactive web dashboard using Streamlit.
+### Data Cleaning
+- Removed duplicate records and constant columns.
+- Replaced invalid zero values using median imputation.
+- Applied IQR-based winsorization to control extreme outliers.
 
-Package everything into reproducible Docker containers.
+### Feature Engineering
+- Non-linear refractive index features (`RI²`, quantile-based RI bins).
+- Interaction term between aluminium and silicon (`Al × Si`).
+- Chemical ratio features (`Na/Ca`, `Mg/Ca`).
+- Feature scaling using `StandardScaler`.
 
-Automate build & deployment using CI/CD.
+### Preprocessing Design
+All transformations are implemented as reusable modules:
+- `src/data_prep.py`
+- `src/features.py`
+- `src/infer.py`
 
-🔥 Why This Project Stands Out
+The preprocessing pipeline is **identical for training and inference**, enforced through persisted artifacts:
+- `models/scaler.joblib`
+- `models/feature_columns.joblib`
 
-Most ML projects stop after training a model.
-This project demonstrates full ML system engineering, including:
+---
 
-Serving
+## 4. Model Development
 
-Monitoring
+### Models Trained
+- Random Forest (baseline)
+- Tuned Random Forest
+- Bagging Classifier
+- AdaBoost
+- Gradient Boosting
+- **Stacking Ensemble (final model)**
 
-Versioning
+### Model Selection
+The stacking ensemble was selected due to its superior generalization performance and robustness across classes.  
+It combines complementary learners to reduce bias and variance.
 
-Deployment
+### Final Model Performance
+- Test accuracy consistently above **0.90**
+- Strong macro F1-score across glass types
+- Improved handling of overlapping classes compared to single models
 
-UI integration
+---
 
-Developer workflows with CI/CD
+## 5. FastAPI Backend – Real-Time Inference
 
-📊 3. Data Pipeline & Feature Engineering
-🧽 Data Cleaning
+The backend serves as a **stateless inference layer**.
 
-Removed duplicate and constant columns
+### Endpoints
+- `GET /health` – service health check
+- `POST /predict` – returns predicted glass type
 
-Replaced invalid zero values
+### Key Characteristics
+- Loads trained artifacts once at startup.
+- Automatically applies preprocessing and feature engineering.
+- Scales features and performs ensemble inference.
+- Responds in milliseconds.
+- Designed to be lightweight and container-ready.
 
-Median imputation
+---
 
-Winsorization to handle extreme outliers
+## 6. Streamlit Frontend – Interactive Dashboard
 
-⚙️ Feature Engineering
+The Streamlit application provides an accessible interface for model interaction.
 
-Non-linear RI features (RI², RI buckets)
+### Capabilities
+- Adjustable sliders for all nine input features.
+- Explicit predict and reset actions.
+- Prediction summary with class probabilities.
+- Rolling history of recent predictions with timestamps.
+- Built-in backend health monitoring.
 
-Interaction terms (Al × Si)
+### Dashboard Sections
+- Interactive feature exploration.
+- System architecture explanation.
+- Model performance insights and conclusions.
 
-Chemical ratios (Na/Ca, Mg/Ca)
+This design enables non-technical stakeholders to interact with the ML system confidently.
 
-Standard Scaling
+---
 
-Manual feature importance analysis
+## 7. Docker Deployment Architecture
 
-📂 Preprocessing Pipeline
+The system is deployed locally using Docker Compose with two services:
 
-All transformations are reproducible through:
+### Services
+1. **glass-api**
+   - FastAPI inference backend
+   - Runs on `http://localhost:8000`
 
-src/data_prep.py
-src/features.py
-src/infer.py
+2. **glass-app**
+   - Streamlit frontend
+   - Communicates with backend via Docker network
+   - Runs on `http://localhost:8501`
 
+This separation mirrors production deployment patterns and ensures reproducibility.
 
-A consistent set of features is stored in:
+---
 
-models/feature_columns.joblib
-models/scaler.joblib
+## 8. CI/CD Pipeline (GitHub Actions)
 
-🤖 4. Model Development
-Models Trained
+The CI/CD pipeline automates validation and container builds.
 
-Random Forest (baseline)
+### Automated Steps
+- Python syntax validation.
+- Build FastAPI Docker image and push to GHCR.
+- Build Streamlit Docker image and push to GHCR.
+- Tag images with `latest` and commit SHA.
 
-Tuned Random Forest (GridSearch)
+### Benefits
+- Reproducible builds.
+- Versioned container images.
+- No dependency on local development environments.
+- Production-style workflow for ML systems.
 
-Bagging Classifier
+---
 
-AdaBoost
+## 9. Results & Insights
 
-Gradient Boosting
+### Key Findings
+- Refractive Index, Sodium, and Calcium are the strongest predictors.
+- Glass types 1, 2, and 7 show high separability.
+- Types 5 and 6 exhibit overlap, effectively handled by the ensemble model.
 
-Stacking Ensemble → Final model
+### Practical Value
+- Enables rapid forensic material classification.
+- Standardizes prediction workflows.
+- Easily deployable ML system using Docker.
+- User-friendly interface for domain experts.
 
-🏆 Best Performing Model
+---
 
-The Stacking Ensemble achieved:
+## 10. Lessons Learned
 
-Metric	Score
-Accuracy	0.90+
-Macro F1 Score	High across all classes
-Robustness	Best generalization
-Why Stacking?
+### Technical
+- Designing reusable preprocessing pipelines.
+- Enforcing training–inference parity.
+- Serving ML models with FastAPI.
+- Packaging multi-service ML systems with Docker.
+- Implementing CI/CD for ML workflows.
 
-Combines strengths of multiple algorithms → reduced variance, reduced bias, better handling of mixed feature interactions.
+### Non-Technical
+- Importance of explainability and trust for stakeholders.
+- Balancing model performance and interpretability.
+- Building interfaces that support confident decision-making.
 
-🧪 5. FastAPI Backend – Real-Time Inference
+---
 
-The backend exposes:
+## 11. Future Enhancements
 
-GET /health – quick uptime check
+- Model versioning and experiment tracking.
+- Automated retraining workflows.
+- Monitoring and observability.
+- Cloud deployment (AWS, GCP, DigitalOcean, Fly.io).
+- Data drift detection.
 
-POST /predict – returns predicted glass type
+---
 
-⚙️ Key Features
+## 12. Conclusion
 
-Loads models at startup
+This project demonstrates **real-world machine learning system engineering**, not just model development.  
+It integrates data processing, ensemble modeling, inference services, UI design, containerization, and CI/CD into a cohesive and production-ready architecture.
 
-Standardizes input
-
-Applies feature engineering automatically
-
-Returns prediction in milliseconds
-
-Light, fast, production-ready API
-
-Example Request
-{
-  "RI": 1.52,
-  "Na": 13.4,
-  "Mg": 3.6,
-  "Al": 1.2,
-  "Si": 72.0,
-  "K": 0.4,
-  "Ca": 8.8,
-  "Ba": 0.0,
-  "Fe": 0.1
-}
-
-🖥 6. Streamlit Frontend – Interactive Dashboard
-
-A polished and intuitive dashboard with:
-
-Tab 1 — Interactive Data Exploration
-
-Adjustable sliders for all 9 input features
-
-Predict button
-
-Reset button
-
-Latest prediction summary
-
-Probability chart
-
-Last 5 predictions (with timestamps)
-
-Tab 2 — System Architecture
-
-High-level architecture diagram
-
-Explanation of pipelines
-
-Tech stack breakdown
-
-Tab 3 — Model Insights
-
-Accuracy comparison among models
-
-Confusion matrix
-
-F1-score per class
-
-Final conclusions
-
-This UI allows non-technical stakeholders to interact with the ML model easily.
-
-🐳 7. Docker Deployment Architecture
-
-The system uses two lightweight containers:
-
-1️⃣ glass-api
-
-FastAPI backend for inference
-Runs on: http://localhost:8000
-
-2️⃣ glass-app
-
-Streamlit frontend
-Automatically communicates with backend via internal Docker network
-Runs on: http://localhost:8501
-
-docker-compose.yml
-version: "3.9"
-
-services:
-  glass-api:
-    image: ghcr.io/<owner>/glass-identification-api:latest
-    ports:
-      - "8000:8000"
-
-  glass-app:
-    image: ghcr.io/<owner>/glass-identification-app:latest
-    ports:
-      - "8501:8501"
-    environment:
-      - API_URL=http://glass-api:8000
-    depends_on:
-      - glass-api
-
-🤖 8. CI/CD Pipeline (GitHub Actions)
-Automated Steps:
-
-✔ Python syntax checks
-✔ Build API image → push to GHCR
-✔ Build APP image → push to GHCR
-✔ Tag images with latest and commit SHA
-
-This ensures:
-
-Reproducibility
-
-Versioned deployments
-
-No dependency on local environment
-
-Production-level workflow
-
-📈 9. Final Results & Insights
-Key Findings
-
-RI, Sodium, and Calcium are the strongest predictors.
-
-Types 1, 2, and 7 have high separability.
-
-Types 5 and 6 show minor overlap, but ensemble model handles them well.
-
-Business Value
-
-Enables rapid forensic material classification
-
-Standardizes prediction pipeline
-
-Easy-to-deploy Dockerized ML system
-
-Human-friendly UI for domain experts
-
-🧭 10. Lessons Learned
-Technical
-
-Building repeatable ML preprocessing workflows
-
-Designing a clean inference pipeline
-
-Model serving patterns with FastAPI
-
-Packaging multi-service apps with Docker
-
-Implementing CI/CD for machine learning projects
-
-Non-Technical
-
-Importance of explainability for stakeholders
-
-Balancing accuracy and interpretability
-
-Creating UI that helps non-technical users trust ML results
-
-🚀 11. Future Enhancements
-
-Add Prometheus/Grafana monitoring
-
-Introduce model versioning (MLflow)
-
-Auto retraining pipeline
-
-Deploy on cloud (AWS / GCP / DigitalOcean / Fly.io)
-
-Add validation dataset drift detection
-
-🏁 12. Conclusion
-
-This project demonstrates real-world ML system engineering, not just model training.
-It includes:
-
-✔ Complete data pipeline
-✔ Strong ML model (Stacking Ensemble)
-✔ Backend + frontend integration
-✔ Docker deployment
-✔ CI/CD automation
-✔ Production-ready architecture
-
-It is a strong showcase of end-to-end machine learning & MLOps skills.
+It serves as a strong portfolio example of applied ML engineering and MLOps practices.

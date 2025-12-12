@@ -1,221 +1,207 @@
-Model Card: Glass Identification Stacking Ensemble Model
+# Model Card — Glass Identification Stacking Ensemble
 
-Version: 1.0
-Author: Pranav Gujjar
-Last Updated: 2025-12-10
+**Version:** 1.0  
+**Author:** Pranav Gujjar  
+**Last Updated:** 2025-12-10  
 
-📌 1. Model Details
-Model Name
+---
 
-Glass Identification – Stacking Ensemble Classifier
+## 1. Model Overview
 
-Model Type
+### Model Name
+Glass Identification — Stacking Ensemble Classifier
 
-Supervised multi-class classifier (Classes: 1, 2, 3, 5, 6, 7)
+### Model Type
+Supervised multi-class classification  
+Target classes: **1, 2, 3, 5, 6, 7**
 
-Architecture
+### Model Architecture
+Stacking ensemble consisting of:
+- Base learners:
+  - Random Forest (tuned)
+  - Gradient Boosting
+  - AdaBoost
+- Meta-learner:
+  - Logistic Regression
 
-A meta-learner (Logistic Regression) stacked over multiple base models:
+### Frameworks and Tools
+- Python 3.12
+- scikit-learn
+- pandas, numpy
 
-Random Forest
+### Model Artifacts
+- `stacking_model.joblib` — trained ensemble model
+- `scaler.joblib` — fitted `StandardScaler`
+- `feature_columns.joblib` — ordered feature schema
 
-Gradient Boosting
+---
 
-AdaBoost
+## 2. Intended Use
 
-Bagging Classifier
+### Intended Users
+- Forensic analysts
+- Material scientists
+- Manufacturing and quality-control engineers
+- ML practitioners and students
 
-Frameworks Used
+### Intended Purpose
+- Predict glass type from chemical composition for:
+  - preliminary forensic analysis
+  - quality control workflows
+  - educational and research use cases
 
-Python 3.12
+### Not Intended For
+- Legal evidence without expert verification
+- Safety-critical or autonomous decision-making
+- Medical or regulatory applications
 
-Scikit-Learn
+---
 
-NumPy / Pandas
+## 3. Training Data
 
-Model Artifacts
-
-stacking_model.joblib – trained ensemble model
-
-scaler.joblib – standard scaler for inference
-
-feature_columns.joblib – final feature schema
-
-📊 2. Intended Use
-✔ Intended Users
-
-Forensic analysts
-
-Material scientists
-
-Manufacturing engineers
-
-ML practitioners evaluating benchmark models
-
-✔ Intended Purpose
-
-Predict glass type based on its chemical composition for:
-
-Preliminary forensic investigations
-
-Quality control in glass manufacturing
-
-Educational ML demonstrations
-
-Research experiments
-
-⚠ Not intended for:
-
-Legal evidence without expert supervision
-
-High-risk autonomous decision-making
-
-Medical or safety-critical workflows
-
-🧪 3. Training Data
-Dataset
-
+### Dataset
 UCI Glass Identification Dataset
 
-Samples
+### Dataset Characteristics
+- 214 samples
+- 9 numerical input features
+- 6 target classes
 
-214 rows
+### Preprocessing
+- Zero-value correction using median imputation
+- Duplicate and constant column removal
+- IQR-based winsorization for outlier control
+- Feature scaling using `StandardScaler`
+- Feature engineering:
+  - squared refractive index (`RI²`)
+  - quantile-based RI bins
+  - interaction term (`Al × Si`)
+  - chemical ratios (`Na/Ca`, `Mg/Ca`)
 
-9 numerical input features
+All preprocessing steps are reused during inference.
 
-6 target classes
+---
 
-Data Preprocessing
+## 4. Evaluation Metrics
 
-✔ Winsorization (outlier smoothing)
-✔ Zero correction using median imputation
-✔ Duplicate removal
-✔ Scaling using StandardScaler
-✔ Feature engineering (RI², ratios, interactions, RI bins)
+### Overall Performance
+- Accuracy: **> 0.90**
+- Macro F1-score: strong across most classes
+- Precision: highest for Types 1, 2, and 7
+- Recall: slightly lower for Type 5 due to class overlap
 
-🧪 4. Evaluation Metrics
-Overall Model Performance
-Metric	Score
-Accuracy	0.90+
-Macro F1-score	High across most classes
-Precision	Strong for Type 1, 2, 7
-Recall	Slight drop for Type 5
-Confusion Matrix Summary
+### Error Characteristics
+- Types 1 and 2 show high separability
+- Type 5 exhibits overlap with neighboring classes
+- Ensemble model improves robustness compared to single classifiers
 
-Types 1 & 2 predicted highly accurately
+---
 
-Type 5 shows some overlap
+## 5. Limitations
 
-Type 7 excellent recall
+- Small dataset size (214 samples) limits generalization.
+- Class imbalance affects minority classes (Types 5 and 6).
+- Requires accurate chemical composition measurements.
+- Model trained on historical data may not fully represent modern glass formulations.
 
-🎯 5. Limitations
-🔸 Dataset is small
+---
 
-Only 214 samples → risk of overfitting, limited real-world variability.
+## 6. Ethical Considerations
 
-🔸 Chemical measurements required
+- Predictions should support, not replace, expert judgment.
+- Misclassification risk exists, particularly for minority classes.
+- Results must be interpreted by domain experts in forensic contexts.
+- Ensemble complexity reduces interpretability compared to simpler models.
 
-Model only works when exact oxide composition is available.
+---
 
-🔸 Class imbalance
+## 7. Input and Output Specification
 
-Some classes have significantly fewer samples (e.g., Type 5, 6).
+### Input Features
+| Feature | Description |
+|-------|-------------|
+| RI | Refractive index |
+| Na | Sodium content |
+| Mg | Magnesium oxide |
+| Al | Aluminium oxide |
+| Si | Silicon oxide |
+| K | Potassium |
+| Ca | Calcium |
+| Ba | Barium |
+| Fe | Iron |
 
-🔸 Limited generalization
-
-Model trained on historical UCI dataset → may not fully represent modern industry glass compositions.
-
-⚠ 6. Ethical Considerations
-
-Should not be used as standalone forensic evidence.
-Predictions must support, not replace, laboratory analysis.
-
-Risk of misclassification exists for minority classes (e.g., Type 5 → Type 3).
-Critical decisions must involve human review.
-
-Interpretability:
-Ensemble models can be complex; decisions may require domain expert validation.
-
-🔍 7. Model Input/Output Specification
-Input Fields
-Feature	Description
-RI	Refractive Index
-Na	Sodium content
-Mg	Magnesium oxide
-Al	Aluminium oxide
-Si	Silicon oxide
-K	Potassium
-Ca	Calcium
-Ba	Barium
-Fe	Iron
-Output
+### Output
+```json
 {
-  "predicted_type": <int>, 
-  "probabilities": [...],
-  "classes": [1,2,3,5,6,7]
+  "predicted_type": <int>
 }
+Class probabilities are available internally via predict_proba and used in the Streamlit dashboard.
 
-🧪 8. Inference Pipeline
-
-The following transformations occur during prediction:
+8. Inference Pipeline
+Prediction flow:
 
 Receive raw JSON input
 
-Validate schema
+Validate input schema
 
-Apply feature engineering
+Apply preprocessing and feature engineering
 
-Apply scaling
+Align features to training schema
 
-Pass to stacking ensemble
+Scale inputs using persisted scaler
 
-Return predicted class + probabilities
+Predict using stacking ensemble
 
-Backend inference is handled via FastAPI.
+Return predicted class
 
-🐳 9. Deployment
+Inference is served via a FastAPI backend.
 
-The model is deployed using two Docker containers:
+9. Deployment
+Backend:
 
-Backend (FastAPI) – glass-api
+FastAPI service (glass-api)
 
-Loads model at startup
+Loads model artifacts at startup
 
-Provides /predict and /health endpoints
+Exposes /predict and /health endpoints
 
-Frontend (Streamlit) – glass-app
+Frontend:
 
-Sends requests to backend
+Streamlit application (glass-app)
 
-Presents results interactively
+Sends inference requests to backend
 
-CI/CD pipeline automatically builds & pushes images to GHCR using GitHub Actions.
+Displays predictions and confidence scores
 
-🔄 10. Versioning
-Version	Changes
-1.0	Initial stacking ensemble, preprocessing pipeline, Docker deployment
+Deployment:
 
-🚀 11. Recommendations for Future Versions
+Dockerized services orchestrated locally via Docker Compose
 
-Integrate MLflow for tracking
+CI/CD pipeline builds and publishes images to GitHub Container Registry
 
-Use SHAP or feature importance plots in UI
+10. Versioning
+Version	Description
+1.0	Initial stacking ensemble with preprocessing, API, UI, and Docker-based deployment
 
-Add data drift detection
+11. Future Improvements
+Add experiment tracking and model versioning
+
+Integrate feature attribution methods (e.g., SHAP)
+
+Implement data drift monitoring
 
 Expand dataset with modern glass compositions
 
-Convert to a REST + batch inference hybrid
+Support batch inference alongside REST API
 
-🏁 Summary
+Summary
+This model provides a high-performing and reproducible solution for glass type classification.
+It demonstrates:
 
-This model provides a high-performing, production-ready solution for glass type classification.
-It showcases:
+disciplined ensemble modeling
 
-Strong ML modeling
+consistent training and inference pipelines
 
-Clean engineering practices
+production-oriented deployment
 
-End-to-end deployment
-
-Responsible use guidelines
+responsible usage considerations
