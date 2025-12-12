@@ -95,7 +95,7 @@ It covers the full ML lifecycle:
 - Docker isolates backend and frontend services
 - GitHub Actions validates code and builds container images
 
-**Screenshots**
+**Project -Screenshots**
 
 <img width="200" height="200" alt="Screenshot 2025-12-12 at 19 56 10" src="https://github.com/user-attachments/assets/0f0358be-c2ec-47b7-9e31-07888708d8ae" />
 <img width="200" height="200" alt="Screenshot 2025-12-12 at 19 56 52" src="https://github.com/user-attachments/assets/064b10bf-6115-45cc-9493-57fb99439e42" />
@@ -108,8 +108,14 @@ It covers the full ML lifecycle:
 <img width="200" height="200" alt="Screenshot 2025-12-12 at 19 58 49" src="https://github.com/user-attachments/assets/a150dd3a-2c5d-42b1-a764-c70369059985" />
 <img width="200" height="200" alt="Screenshot 2025-12-12 at 19 58 57" src="https://github.com/user-attachments/assets/7735af14-99fb-4589-9ded-dbd89337ded6" />
 
+**Docker - Screenshots**
 
+<img width="200" height="200" alt="Screenshot 2025-12-12 at 20 10 59" src="https://github.com/user-attachments/assets/8319b1d4-6ab4-41a5-93a6-70c724018aa6" />
+<img width="200" height="200" alt="Screenshot 2025-12-12 at 20 11 14" src="https://github.com/user-attachments/assets/303f4aaf-1013-4ee0-8596-b6a391218a8a" />
 
+**FastAPI - Screenshots**
+
+<img width="200" height="200" alt="Screenshot 2025-12-12 at 20 13 15" src="https://github.com/user-attachments/assets/bd935d41-b27e-43a2-97ed-0f6fee6b08bc" />
 
 
 ## Project Structure
